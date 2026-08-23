@@ -1,0 +1,9 @@
+packages:
+  - .
+
+autoInstallPeers: false
+strictPeerDependencies: false
+
+onlyBuiltDependencies:
+  - esbuild
+

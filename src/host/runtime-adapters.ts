@@ -20,6 +20,7 @@ interface StoredValue { readonly type: PanelFieldDefinition["type"]; readonly va
 type NamespaceValues = Readonly<Record<string, Readonly<Record<string, StoredValue>>>>;
 interface ValueDocument {
   readonly schemaVersion: 1;
+  readonly migrationVersion?: 1;
   readonly revision: number;
   readonly plugins: NamespaceValues;
   readonly skills: NamespaceValues;
@@ -41,6 +42,7 @@ function validDocument(value: unknown): value is ValueDocument {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
   const record = value as Record<string, unknown>;
   return record.schemaVersion === 1
+    && (record.migrationVersion === undefined || record.migrationVersion === 1)
     && Number.isInteger(record.revision)
     && validNamespace(record.plugins)
     && validNamespace(record.skills);
@@ -125,7 +127,12 @@ export class NamespacedJsonPanelPersistenceAdapter implements PanelPersistenceAd
         if (change.op === "unset") delete values[change.field.id];
         else values[change.field.id] = { type: change.field.type, value: structuredClone(change.value) };
       }
-      const next: ValueDocument = { schemaVersion: 1, revision: current.revision + 1, ...namespaces };
+      const next: ValueDocument = {
+        schemaVersion: 1,
+        ...(current.migrationVersion === undefined ? {} : { migrationVersion: current.migrationVersion }),
+        revision: current.revision + 1,
+        ...namespaces,
+      };
       await writeAtomic(this.filename, next);
       return this.snapshot(next, resourceId, definition);
     });
@@ -200,4 +207,3 @@ export class DshCredentialAdapter implements CredentialAdapter {
     return this.read(resourceId, definition);
   }
 }
-

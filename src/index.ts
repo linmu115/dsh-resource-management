@@ -16,6 +16,7 @@ import {
 } from "@linmu/dsh-management-kit/host";
 
 import { createAssetHttpHandler } from "./host/asset-route.js";
+import { migrateLegacyPanelValues, type PanelValuePaths } from "./host/panel-migration.js";
 import { ResourceManagementActions } from "./host/action-service.js";
 import { createManagementHttpHandler } from "./host/http-route.js";
 import {
@@ -68,9 +69,14 @@ function profilePackageFile(): string {
   return path.join(dshHome(), "profiles", profileName(), "package.json");
 }
 
-function panelStateFile(): string {
+function panelValuePaths(): PanelValuePaths {
   const profileKey = createHash("sha256").update(profileName()).digest("hex").slice(0, 16);
-  return path.join(dshHome(), "plugin-data", "dsh-resource-management", profileKey, "panel-values.json");
+  const root = path.join(dshHome(), "plugin-data");
+  return {
+    unified: path.join(root, "dsh-resource-management", profileKey, "panel-values.json"),
+    legacyPlugin: path.join(root, "dsh-plugin-management", profileKey, "panel-values.json"),
+    legacySkill: path.join(root, "dsh-skill-management", profileKey, "panel-values.json"),
+  };
 }
 
 function skillRoots(): SkillRoot[] {
@@ -84,7 +90,9 @@ function skillRoots(): SkillRoot[] {
 export const name = "dsh-resource-management";
 export const inject = ["loader", "webServer", "credentials", "skills"];
 
-export function apply(ctx: HostContext): void {
+export async function apply(ctx: HostContext): Promise<void> {
+  const valuePaths = panelValuePaths();
+  await migrateLegacyPanelValues(valuePaths);
   const connection = resolveResourceCategoryConnection({ dshHome: dshHome() });
   const pluginCatalog = new PluginCatalog(
     new LoaderInventoryAdapter(ctx.loader, profilePackageFile()),
@@ -106,7 +114,7 @@ export function apply(ctx: HostContext): void {
   new ResourceManagementActions(ctx, ctx.loader, actions);
   const runtime = new PanelRuntime({
     definitions,
-    persistence: new NamespacedJsonPanelPersistenceAdapter(panelStateFile()),
+    persistence: new NamespacedJsonPanelPersistenceAdapter(valuePaths.unified),
     credentials: new DshCredentialAdapter(ctx.credentials),
     actions,
   });
@@ -130,3 +138,11 @@ export function apply(ctx: HostContext): void {
 }
 
 export { dispatchManagementRequest } from "./host/api.js";
+export {
+  exportLegacyPanelValues,
+  migrateLegacyPanelValues,
+  type PanelExportResult,
+  type PanelMigrationOperations,
+  type PanelMigrationResult,
+  type PanelValuePaths,
+} from "./host/panel-migration.js";

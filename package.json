@@ -1,6 +1,6 @@
 {
   "name": "dsh-resource-management",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unified native DSH Plugin and Skill resource management",
   "type": "module",
   "license": "MIT",
@@ -57,7 +57,7 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "@linmu/dsh-management-kit": "file:vendor/linmu-dsh-management-kit-0.1.4.tgz",
+    "@linmu/dsh-management-kit": "file:vendor/linmu-dsh-management-kit-0.1.5.tgz",
     "@deepseek-ai/cordis": "4.0.1",
     "@deepseek-ai/dsh-invariants": "0.1.1-rc.2",
     "@types/node": "^24.3.0",
@@ -75,4 +75,3 @@
     "url": "https://github.com/linmu115/dsh-resource-management.git"
   }
 }
-

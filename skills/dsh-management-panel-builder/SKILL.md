@@ -18,9 +18,9 @@ description: 为现有 DSH Plugin 或 Skill 设计、实现并验证 dsh-resourc
 1. 在目标资源自己的仓库创建或更新 `dsh-management/panel.yaml`。Plugin 必须把该目录加入 npm/DSH 发布产物；Skill 直接把它保存在 Skill 来源目录。
 2. 使用稳定字段 ID。布局、字段顺序、默认值、校验和 action 声明进入目标资源 Git；用户当前值、开关状态和 Secret 不进入 Git。
 3. 按真实生效方式选择 `immediate`、`save` 或 `restart-required`。不要为了减少重启把只能启动时读取的配置标成即时生效。
-4. 证明参数已经接到目标资源的真实配置读取路径。仅看到 Manager 控件、仅写入 Manager 的 `panel-values.json`，不能证明目标插件已经使用该值。如果当前 Host 接口不足以安全接线，明确报告这个阻塞，不得把静态 YAML 当作完成功能。
+4. 每个字段在接受声明前都必须指出它的真实运行消费者，并证明参数已经接到目标资源的真实配置读取路径。仅看到 Manager 控件、仅写入 Manager 的 `panel-values.json`，不能证明目标插件已经使用该值。如果 Manager 缺少公开配置桥接，就先扩展受测试的公开桥接或让目标资源实现文档化 adapter；不得从目标资源读取 Manager 私有数据文件，也不得把静态 YAML 当作完成功能。纯 action 面板不需要字段配置桥，但每个 action 仍必须登记真实处理器。
 5. Secret 只使用 `secret` 字段和 `credential` binding；不得读取回显、写入普通 JSON、日志、测试快照或错误详情。
-6. 操作按钮必须由目标 Plugin 通过 `ctx.resourceManagementActions.register(packageName, actionId, handler)` 显式登记。Skill Contract v1 不支持操作按钮。危险操作使用 `danger`，并在声明中提供明确的 `confirmation`。
+6. 操作按钮必须由目标 Plugin 通过 `ctx.resourceManagementActions.register(packageName, actionId, handler)` 显式登记，且处理器必须调用目标资源已有或此次明确获准新增的真实业务入口。只有 YAML 声明、虚假成功返回或与实际命令并行维护的第二套逻辑都不算完成。Skill Contract v1 不支持操作按钮。危险操作使用 `danger`，并在声明中提供明确的 `confirmation`。
 7. 不在资源面板暴露安装、卸载、更新、Git、Generation、Checkpoint、诊断或回退；这些仍属于 DSH Maintenance。
 8. 不允许目标插件禁用 `dsh-resource-management` 自身，也不要绕过 Manager 的当前 profile 边界。
 

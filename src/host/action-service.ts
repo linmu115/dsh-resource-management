@@ -4,6 +4,7 @@ import type { ActionHandler, ActionRegistry } from "@linmu/dsh-management-kit/ho
 import type { LoaderLike } from "./loader-adapters.js";
 
 export interface PluginActionHandlerResult {
+  readonly ok?: boolean;
   readonly message: string;
   readonly restartRequired?: boolean;
 }

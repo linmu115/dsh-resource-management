@@ -9,6 +9,7 @@ import type {
   ResourceDetail,
   ResourceKind,
   ResourceSummary,
+  ModelCatalogView,
 } from "@linmu/dsh-management-kit";
 import type { PanelDefinition } from "@linmu/dsh-management-kit/contract";
 import type { PanelRuntime, ProfileControl, ReadmeAssetAuthorization, ResourceCatalog } from "@linmu/dsh-management-kit/host";
@@ -37,6 +38,7 @@ interface ServiceDependencies {
   readonly runtime: PanelRuntime;
   readonly control: ProfileControl;
   readonly categories: CategoryServiceFace | CategoryChannels;
+  readonly models?: { list(): Promise<ModelCatalogView> };
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -87,16 +89,19 @@ export class ResourceManagementService {
   private readonly runtime: PanelRuntime;
   private readonly control: ProfileControl;
   private readonly categoryService: CategoryServiceFace;
+  private readonly models?: { list(): Promise<ModelCatalogView> };
 
   constructor(dependencies: ServiceDependencies | {
     readonly catalog: ResourceCatalogFace;
     readonly runtime: PanelRuntime;
     readonly control: ProfileControl;
     readonly categories: ResourceCategories | CategoryServiceFace;
+    readonly models?: { list(): Promise<ModelCatalogView> };
   }) {
     this.catalog = dependencies.catalog;
     this.runtime = dependencies.runtime;
     this.control = dependencies.control;
+    this.models = dependencies.models;
     const categoryDependency = dependencies.categories;
     this.categoryService = "plugin" in categoryDependency && "skill" in categoryDependency
       ? {
@@ -175,6 +180,10 @@ export class ResourceManagementService {
 
   categories = async (params: unknown): Promise<ResourceCategoryState> => this.categoryService.snapshot(kind(record(params).kind));
   mutateCategory = (params: unknown): Promise<ResourceCategoryState> => this.categoryService.mutate(record(params) as unknown as ResourceCategoryMutation);
+  modelCatalog = async (): Promise<ModelCatalogView> => {
+    if (this.models === undefined) throw Object.assign(new Error("模型目录不可用"), { code: "MODEL_CATALOG_UNAVAILABLE" });
+    return this.models.list();
+  };
 
   authorizeAsset = async (params: unknown): Promise<ReadmeAssetAuthorization> => {
     const input = record(params);

@@ -113,6 +113,8 @@ ctx.effect(() => ctx.resourceManagementActions.register(
 
 处理器返回短消息、可选 `restartRequired: true`，以及可选 `ok: false` 表示已安全处理但执行失败；Manager 会把失败消息作为按钮下方的小行错误反馈。同一操作由 Manager 防止并发重复执行；处理器仍应限制作用域、可重试，并避免把敏感错误详情返回给浏览器。处理器必须复用真实业务入口，不能另写一套与现有命令漂移的实现。Skill Contract v1 不执行 actions。
 
+如果 action 会停止、重启当前 DSH，或以其他方式中断承载 Manager HTTP 请求的进程，必须先用 `ctx.resourceManagementActions.deferUntilResponse(task)` 登记实际操作，再立即返回确认结果。Manager 只会在完整 JSON 回执已经写给浏览器后执行该 task，避免浏览器收到空响应。不得只依赖固定延时猜测响应何时完成。
+
 ## 适配决策
 
 - 能直接证明生效的现有配置：创建字段并完成接线。

@@ -1,16 +1,17 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 import { dispatchManagementRequest, type ResourceManagementServiceFace } from "./api.js";
+import { ResponseCompletionScheduler } from "./response-completion.js";
 
 const MAX_REQUEST_BYTES = 1024 * 1024;
 
-function writeJson(res: ServerResponse, status: number, value: unknown): void {
+function writeJson(res: ServerResponse, status: number, value: unknown, onFinished?: () => void): void {
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
     "x-content-type-options": "nosniff",
   });
-  res.end(JSON.stringify(value));
+  res.end(JSON.stringify(value), onFinished);
 }
 
 function sameOrigin(req: IncomingMessage): boolean {
@@ -34,7 +35,10 @@ async function readBody(req: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-export function createManagementHttpHandler(service: ResourceManagementServiceFace) {
+export function createManagementHttpHandler(
+  service: ResourceManagementServiceFace,
+  responseCompletion = new ResponseCompletionScheduler(),
+) {
   return async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     if (req.method !== "POST") {
       res.setHeader("allow", "POST");
@@ -54,10 +58,17 @@ export function createManagementHttpHandler(service: ResourceManagementServiceFa
       if (typeof body !== "object" || body === null || Array.isArray(body) || !("method" in body)) throw new TypeError("invalid request envelope");
       const input = body as { readonly method?: unknown; readonly params?: unknown };
       if (typeof input.method !== "string") throw new TypeError("invalid request method");
-      writeJson(res, 200, await dispatchManagementRequest(service, {
-        method: input.method,
+      const method = input.method;
+      const captured = await responseCompletion.capture(() => dispatchManagementRequest(service, {
+        method,
         ...(input.params === undefined ? {} : { params: input.params }),
       }));
+      writeJson(
+        res,
+        200,
+        captured.value,
+        captured.tasks.length === 0 ? undefined : () => responseCompletion.flush(captured.tasks),
+      );
     } catch (error) {
       const tooLarge = typeof error === "object" && error !== null && "code" in error && error.code === "REQUEST_TOO_LARGE";
       writeJson(res, tooLarge ? 413 : 400, {
@@ -67,4 +78,3 @@ export function createManagementHttpHandler(service: ResourceManagementServiceFa
     }
   };
 }
-

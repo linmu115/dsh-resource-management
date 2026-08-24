@@ -5,6 +5,8 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { fileURLToPath } from "node:url";
 
 import type { Context } from "@deepseek-ai/cordis";
+import type {} from "@deepseek-ai/dsh-llm";
+import type {} from "@deepseek-ai/dsh-settings";
 import {
   ActionRegistry,
   PanelRuntime,
@@ -27,7 +29,10 @@ import {
   type LoaderLike,
 } from "./host/loader-adapters.js";
 import { ConnectedPluginRegistryMetadataAdapter } from "./host/registry-adapter.js";
+import { ResponseCompletionScheduler } from "./host/response-completion.js";
 import { ResourceCategories } from "./host/resource-categories.js";
+import { DshModelCatalogAdapter } from "./host/model-catalog.js";
+import { DshSettingsPanelAdapter } from "./host/settings-adapter.js";
 import {
   DshCredentialAdapter,
   NamespacedJsonPanelPersistenceAdapter,
@@ -117,10 +122,12 @@ export async function apply(ctx: HostContext): Promise<void> {
     },
   };
   const actions = new ActionRegistry();
-  new ResourceManagementActions(ctx, ctx.loader, actions);
+  const responseCompletion = new ResponseCompletionScheduler();
+  new ResourceManagementActions(ctx, ctx.loader, actions, responseCompletion);
   const runtime = new PanelRuntime({
     definitions,
     persistence: new NamespacedJsonPanelPersistenceAdapter(valuePaths.unified),
+    settings: new DshSettingsPanelAdapter(() => ctx.get("settings")),
     credentials: new DshCredentialAdapter(ctx.credentials),
     actions,
   });
@@ -129,12 +136,13 @@ export async function apply(ctx: HostContext): Promise<void> {
     new LoaderProfileBundleAdapter(ctx.loader),
   );
   const categories = new ResourceCategories(connection, { plugin: pluginCatalog, skill: skillCatalog });
-  const service = new ResourceManagementService({ catalog, runtime, control, categories });
+  const models = new DshModelCatalogAdapter(() => ctx.get("llm"));
+  const service = new ResourceManagementService({ catalog, runtime, control, categories, models });
 
   ctx.effect(() => ctx.webServer.register({
     kind: "exact",
     path: "/dsh-resource-management/api",
-    handler: createManagementHttpHandler(service),
+    handler: createManagementHttpHandler(service, responseCompletion),
   }), "dsh-resource-management: API route");
   ctx.effect(() => ctx.webServer.register({
     kind: "prefix",

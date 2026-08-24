@@ -1,6 +1,6 @@
 {
   "name": "dsh-resource-management",
-  "version": "0.2.1",
+  "version": "0.3.2",
   "description": "DSH Plugin and Skill resource management with a bundled panel-building Skill",
   "author": {
     "name": "linmu115",

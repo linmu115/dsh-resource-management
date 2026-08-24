@@ -20,6 +20,7 @@ export interface ResourceManagementServiceFace {
   readonly setPluginEnabled?: (params?: unknown) => Promise<unknown>;
   readonly categories?: (params?: unknown) => Promise<unknown>;
   readonly mutateCategory?: (params?: unknown) => Promise<unknown>;
+  readonly modelCatalog?: (params?: unknown) => Promise<unknown>;
 }
 
 const allowedMethods = new Set<keyof ResourceManagementServiceFace>([
@@ -35,6 +36,7 @@ const allowedMethods = new Set<keyof ResourceManagementServiceFace>([
   "setPluginEnabled",
   "categories",
   "mutateCategory",
+  "modelCatalog",
 ]);
 
 function errorCode(reason: unknown): string {
@@ -44,7 +46,8 @@ function errorCode(reason: unknown): string {
 
 function errorMessage(reason: unknown): string {
   const code = errorCode(reason);
-  if (code.startsWith("CATEGORY_") && reason instanceof Error && reason.message.length > 0) return reason.message.slice(0, 512);
+  if ((code.startsWith("CATEGORY_") || code.startsWith("MODEL_CATALOG_"))
+    && reason instanceof Error && reason.message.length > 0) return reason.message.slice(0, 512);
   return "资源管理操作失败";
 }
 
@@ -63,4 +66,3 @@ export async function dispatchManagementRequest(
     return { ok: false, error: { code: errorCode(reason), message: errorMessage(reason) } };
   }
 }
-

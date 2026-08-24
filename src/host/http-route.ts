@@ -5,13 +5,13 @@ import { ResponseCompletionScheduler } from "./response-completion.js";
 
 const MAX_REQUEST_BYTES = 1024 * 1024;
 
-function writeJson(res: ServerResponse, status: number, value: unknown): void {
+function writeJson(res: ServerResponse, status: number, value: unknown, onFinished?: () => void): void {
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
     "x-content-type-options": "nosniff",
   });
-  res.end(JSON.stringify(value));
+  res.end(JSON.stringify(value), onFinished);
 }
 
 function sameOrigin(req: IncomingMessage): boolean {
@@ -63,10 +63,12 @@ export function createManagementHttpHandler(
         method,
         ...(input.params === undefined ? {} : { params: input.params }),
       }));
-      if (captured.tasks.length > 0) {
-        res.once("finish", () => responseCompletion.flush(captured.tasks));
-      }
-      writeJson(res, 200, captured.value);
+      writeJson(
+        res,
+        200,
+        captured.value,
+        captured.tasks.length === 0 ? undefined : () => responseCompletion.flush(captured.tasks),
+      );
     } catch (error) {
       const tooLarge = typeof error === "object" && error !== null && "code" in error && error.code === "REQUEST_TOO_LARGE";
       writeJson(res, tooLarge ? 413 : 400, {

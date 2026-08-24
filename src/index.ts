@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import path from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { fileURLToPath } from "node:url";
 
 import type { Context } from "@deepseek-ai/cordis";
 import {
@@ -81,6 +82,11 @@ function panelValuePaths(): PanelValuePaths {
 
 function skillRoots(): SkillRoot[] {
   return [
+    {
+      category: "other",
+      root: fileURLToPath(new URL("../skills", import.meta.url)),
+      label: "bundled",
+    },
     { category: "codex", root: process.env.CODEX_SKILLS_DIR ?? path.join(homedir(), ".codex", "skills"), label: "user" },
     { category: "agents", root: process.env.DSH_AGENTS_SKILLS_DIR ?? path.join(homedir(), ".agents", "skills"), label: "user" },
     { category: "other", root: path.join(dshHome(), "skills"), label: "dsh" },

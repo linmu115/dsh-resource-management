@@ -1,0 +1,6 @@
+interface:
+  display_name: "DSH Manager 参数面板构建"
+  short_description: "为指定 DSH Plugin 或 Skill 构建统一参数面板"
+  default_prompt: "使用 $dsh-management-panel-builder 为指定 DSH 插件构建可实际生效的参数面板。"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,33 @@
+{
+  "name": "dsh-resource-management",
+  "version": "0.2.0",
+  "description": "DSH Plugin and Skill resource management with a bundled panel-building Skill",
+  "author": {
+    "name": "linmu115",
+    "url": "https://github.com/linmu115"
+  },
+  "homepage": "https://github.com/linmu115/dsh-resource-management#readme",
+  "repository": "https://github.com/linmu115/dsh-resource-management",
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "resource-management",
+    "parameter-panel",
+    "skill"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DSH Resource Management",
+    "shortDescription": "Build unified parameter panels for DSH resources.",
+    "longDescription": "Manage DSH Plugin and Skill resources and guide AI to adapt versioned Manager parameter panels.",
+    "developerName": "linmu115",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use $dsh-management-panel-builder to adapt a DSH plugin parameter panel."
+    ]
+  }
+}

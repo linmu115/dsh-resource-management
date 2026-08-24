@@ -1,6 +1,6 @@
 {
   "name": "dsh-resource-management",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Unified native DSH Plugin and Skill resource management",
   "type": "module",
   "license": "MIT",
@@ -23,10 +23,12 @@
     }
   },
   "files": [
+    ".codex-plugin",
     "lib/index.js",
     "lib/client.js",
     "src",
     "docs",
+    "skills",
     "cordis.patch.yml",
     "README.md",
     "LICENSE"

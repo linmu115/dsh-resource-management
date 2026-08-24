@@ -11,6 +11,23 @@
 
 README 使用 GFM 渲染，原始 HTML、脚本协议、绝对路径、UNC 路径、符号链接逃逸和不受支持的本地图片类型均被拒绝。图片只通过本机同源、短期 profile 运行期间签发的 asset 身份读取。
 
+## 内置参数面板构建 Skill
+
+仓库内置 [`dsh-management-panel-builder`](skills/dsh-management-panel-builder/SKILL.md)，用于指导 AI 为指定 DSH Plugin 或 Skill 构建 Manager 的统一参数面板。Skill 固化了当前 Contract v1、方案 A 的分组设置卡模板、字段与操作按钮约束、运行值边界、验证流程，以及“不能只生成界面而不证明参数实际生效”的验收规则。
+
+这个仓库同时支持两种发现方式：
+
+- DSH/npm 安装包会包含整个 `skills/` 目录，Manager 启动后将它作为只读 bundled Skill 来源展示。
+- 仓库根目录的 [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) 将 `./skills/` 声明为 Codex 插件能力；从 GitHub 安装该 Codex 插件时会一并发现 Skill。
+
+建议给 AI 的调用提示：
+
+```text
+使用 $dsh-management-panel-builder，读取 <目标插件仓库路径>，只根据该插件已经存在的功能构建 dsh-management/panel.yaml，并完成必要的运行接线、测试和修改日志。不要修改 Manager 的统一 UI，也不要生成无法实际生效的参数。
+```
+
+面板结构、字段 ID、默认值和按钮声明随目标资源 Git 版本维护；用户填写的实际值仍保存在当前 DSH profile 或凭据系统中，不写回目标仓库。
+
 ## 本地开发
 
 ```powershell
@@ -19,4 +36,3 @@ pnpm check
 ```
 
 发布前由 Maintenance 生成单一 `dsh-resource-management-<version>.tgz`，再通过目标 DSH profile 的 Generation 激活。
-

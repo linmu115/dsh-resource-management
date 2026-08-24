@@ -29,7 +29,19 @@ export function createHttpManagementClient(request: typeof fetch = fetch): Manag
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ method, params }),
     });
-    const envelope = await response.json() as ApiEnvelope<T>;
+    const body = await response.text();
+    if (body.trim().length === 0) {
+      throw new ManagementApiError(
+        "EMPTY_RESPONSE",
+        "DSH 管理连接在返回结果前中断；如果刚执行了重启类操作，请等待 DSH 恢复。",
+      );
+    }
+    let envelope: ApiEnvelope<T>;
+    try {
+      envelope = JSON.parse(body) as ApiEnvelope<T>;
+    } catch {
+      throw new ManagementApiError("INVALID_RESPONSE", "DSH 管理服务返回了无法识别的响应");
+    }
     if (!response.ok || !envelope.ok) {
       throw new ManagementApiError(envelope.error?.code ?? "REQUEST_FAILED", envelope.error?.message ?? "管理服务不可用");
     }

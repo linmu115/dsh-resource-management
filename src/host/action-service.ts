@@ -2,6 +2,7 @@ import { Service, type Context } from "@deepseek-ai/cordis";
 import type { ActionHandler, ActionRegistry } from "@linmu/dsh-management-kit/host";
 
 import type { LoaderLike } from "./loader-adapters.js";
+import type { ResponseCompletionScheduler, ResponseCompletionTask } from "./response-completion.js";
 
 export interface PluginActionHandlerResult {
   readonly ok?: boolean;
@@ -26,6 +27,7 @@ export class ResourceManagementActions extends Service {
     ctx: Context,
     private readonly loader: LoaderLike,
     private readonly registry: ActionRegistry,
+    private readonly responseCompletion: ResponseCompletionScheduler,
   ) {
     super(ctx, "resourceManagementActions");
   }
@@ -40,5 +42,9 @@ export class ResourceManagementActions extends Service {
     return () => {
       for (const dispose of disposers.reverse()) dispose();
     };
+  }
+
+  deferUntilResponse(task: ResponseCompletionTask): void {
+    this.responseCompletion.defer(task);
   }
 }

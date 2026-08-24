@@ -37,4 +37,14 @@ describe("unified resource management client", () => {
       }),
     }));
   });
+
+  it("turns an interrupted empty response into a restart-aware error", async () => {
+    const request = vi.fn(async () => new Response("", { status: 200 }));
+    const client = createHttpManagementClient(request as typeof fetch);
+
+    await expect(client.list("plugin")).rejects.toMatchObject({
+      code: "EMPTY_RESPONSE",
+      message: expect.stringContaining("等待 DSH 恢复"),
+    });
+  });
 });

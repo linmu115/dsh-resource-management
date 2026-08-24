@@ -49,6 +49,7 @@ export function createHttpManagementClient(request: typeof fetch = fetch): Manag
     setPluginEnabled: (payload) => call("setPluginEnabled", payload),
     categories: (kind) => call("categories", { kind }),
     mutateCategory: (payload) => call("mutateCategory", payload),
+    modelCatalog: () => call("modelCatalog", {}),
   };
 }
 
@@ -85,4 +86,3 @@ export function apply(ctx: ClientContext): void {
     }), `dsh-resource-management: sidebar tab ${registration.id}`);
   }
 }
-

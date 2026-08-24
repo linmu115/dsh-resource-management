@@ -25,7 +25,7 @@ describe("bundled panel-builder Skill", () => {
     expect(pluginJson.version).toBe(packageJson.version);
   });
 
-  it("is discoverable by the Manager Skill catalog and ships a valid Contract v1 template", async () => {
+  it("is discoverable by the Manager Skill catalog and ships a valid Contract v2 template", async () => {
     const adapter = new FilesystemAndDshSkillSourceAdapter([
       { category: "other", root: path.join(root, "skills"), label: "bundled" },
     ]);
@@ -40,7 +40,7 @@ describe("bundled panel-builder Skill", () => {
       }),
     ]);
     expect(parsePanelDocument(template)).toMatchObject({
-      contractVersion: 1,
+      contractVersion: 2,
       sections: expect.arrayContaining([expect.objectContaining({ id: "general" })]),
       actions: [expect.objectContaining({ id: "cache.clear", style: "danger" })],
     });

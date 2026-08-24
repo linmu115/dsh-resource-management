@@ -1,6 +1,6 @@
-# 方案 A 的 Contract v1 起始模板。
+# 方案 A 的 Contract v2 起始模板。
 # 复制到目标资源根的 dsh-management/panel.yaml 后，只保留目标资源真实支持的字段和操作。
-contractVersion: 1
+contractVersion: 2
 
 sections:
   - id: general
@@ -14,7 +14,7 @@ sections:
         default: true
         apply: immediate
         binding:
-          kind: profile
+          kind: dsh-settings
           namespace: target-plugin
           key: feature.enabled
 
@@ -30,8 +30,8 @@ sections:
             label: 专注
         apply: save
         binding:
-          kind: plugin-data
-          adapterId: target-plugin-runtime
+          kind: dsh-settings
+          namespace: target-plugin
           key: behavior.mode
 
       - id: render.intensity
@@ -44,9 +44,16 @@ sections:
         unit: "%"
         apply: restart-required
         binding:
-          kind: plugin-data
-          adapterId: target-plugin-runtime
+          kind: dsh-settings
+          namespace: target-plugin
           key: render.intensity
+
+  - id: developer
+    title: 开发者选项
+    description: 只保留目标资源确实需要暴露的低层配置
+    collapsible: true
+    defaultCollapsed: true
+    fields: []
 
   - id: connection
     title: 连接

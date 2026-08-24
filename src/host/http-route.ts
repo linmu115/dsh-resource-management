@@ -63,12 +63,22 @@ export function createManagementHttpHandler(
         method,
         ...(input.params === undefined ? {} : { params: input.params }),
       }));
+      let released = false;
+      const releaseDeferredTasks = captured.tasks.length === 0 ? undefined : () => {
+        if (released) return;
+        released = true;
+        responseCompletion.flush(captured.tasks);
+      };
       writeJson(
         res,
         200,
         captured.value,
-        captured.tasks.length === 0 ? undefined : () => responseCompletion.flush(captured.tasks),
+        releaseDeferredTasks,
       );
+      // DSH WebServer adapters may not forward ServerResponse completion
+      // callbacks. The response has already been serialized and ended here,
+      // so release once on the next event-loop turn as a compatibility path.
+      if (releaseDeferredTasks !== undefined) setImmediate(releaseDeferredTasks);
     } catch (error) {
       const tooLarge = typeof error === "object" && error !== null && "code" in error && error.code === "REQUEST_TOO_LARGE";
       writeJson(res, tooLarge ? 413 : 400, {

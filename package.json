@@ -1,6 +1,6 @@
 {
   "name": "dsh-resource-management",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Unified native DSH Plugin and Skill resource management",
   "type": "module",
   "license": "MIT",
@@ -40,15 +40,15 @@
     "check": "pnpm typecheck && pnpm test && pnpm build"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-credentials": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-host-webserver": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-llm": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-settings": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-skill": "^0.1.1-rc.2",
-    "dsh-better-sidebar": ">=0.15.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-credentials": "*",
+    "@deepseek-ai/dsh-host-webserver": "*",
+    "@deepseek-ai/dsh-llm": "*",
+    "@deepseek-ai/dsh-settings": "*",
+    "@deepseek-ai/dsh-skill": "*",
+    "dsh-better-sidebar": "*",
+    "react": "*",
+    "react-dom": "*"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": { "optional": true },

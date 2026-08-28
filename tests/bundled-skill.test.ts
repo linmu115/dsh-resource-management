@@ -14,6 +14,7 @@ describe("bundled panel-builder Skill", () => {
     const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8")) as {
       version: string;
       files: string[];
+      peerDependencies: Record<string, string>;
     };
     const pluginJson = JSON.parse(await readFile(path.join(root, ".codex-plugin", "plugin.json"), "utf8")) as {
       version: string;
@@ -23,6 +24,7 @@ describe("bundled panel-builder Skill", () => {
     expect(packageJson.files).toEqual(expect.arrayContaining([".codex-plugin", "skills"]));
     expect(pluginJson.skills).toBe("./skills/");
     expect(pluginJson.version).toBe(packageJson.version);
+    expect(new Set(Object.values(packageJson.peerDependencies))).toEqual(new Set(["*"]));
   });
 
   it("is discoverable by the Manager Skill catalog and ships a valid Contract v2 template", async () => {

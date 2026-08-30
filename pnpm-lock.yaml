@@ -25,8 +25,8 @@ importers:
         specifier: 0.1.1-rc.2
         version: 0.1.1-rc.2(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-invariants@0.1.1-rc.2(@deepseek-ai/cordis@4.0.1))(@deepseek-ai/schemastery@3.18.1)
       '@linmu/dsh-management-kit':
-        specifier: file:vendor/linmu-dsh-management-kit-0.2.0.tgz
-        version: file:vendor/linmu-dsh-management-kit-0.2.0.tgz(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: file:vendor/linmu-dsh-management-kit-0.2.1.tgz
+        version: file:vendor/linmu-dsh-management-kit-0.2.1.tgz(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/node':
         specifier: ^24.3.0
         version: 24.13.3
@@ -97,9 +97,9 @@ packages:
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
 
-  '@linmu/dsh-management-kit@file:vendor/linmu-dsh-management-kit-0.2.0.tgz':
-    resolution: {integrity: sha512-jGQJgqZU+el7iTVA+LCMGKrVYOHJzyaH79Ki554iLLyp1nesjvWC3EZqoXkmEEYY1021ayVdVpbS9eCX5rdaQg==, tarball: file:vendor/linmu-dsh-management-kit-0.2.0.tgz}
-    version: 0.2.0
+  '@linmu/dsh-management-kit@file:vendor/linmu-dsh-management-kit-0.2.1.tgz':
+    resolution: {integrity: sha512-5wPa8ygl7xHXRh1UBNPpQiZVz5ALNiqMlRC5roGJLg3yZaTmXhP5K8AOkgtPKnnMFdTnDWPKmWQetYzyXiwDZg==, tarball: file:vendor/linmu-dsh-management-kit-0.2.1.tgz}
+    version: 0.2.1
     peerDependencies:
       react: '>=18 <20'
       react-dom: '>=18 <20'
@@ -1158,7 +1158,7 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
-  '@linmu/dsh-management-kit@file:vendor/linmu-dsh-management-kit-0.2.0.tgz(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@linmu/dsh-management-kit@file:vendor/linmu-dsh-management-kit-0.2.1.tgz(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       lucide-react: 0.542.0(react@18.3.1)
       react: 18.3.1

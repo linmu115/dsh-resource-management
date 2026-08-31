@@ -1,4 +1,4 @@
-import { settingsNamespace, type SettingsDescriptor, type SettingsProvider } from "@deepseek-ai/dsh-settings";
+import type { SettingsDescriptor, SettingsProvider } from "@deepseek-ai/dsh-settings";
 import type { PanelDefinition, PanelFieldDefinition } from "@linmu/dsh-management-kit/contract";
 import type {
   SettingsAdapter,
@@ -89,7 +89,7 @@ export class DshSettingsPanelAdapter implements SettingsAdapter {
       const descriptor = descriptors.get(namespace);
       if (descriptor === undefined) throw new Error(`Settings namespace is not registered: ${namespace}`);
       await provider.mutate(
-        settingsNamespace(namespace),
+        descriptor.ns,
         namespaceChanges.map((change) => {
           if (change.field.binding.kind !== "dsh-settings") throw new Error("unreachable");
           return change.op === "unset"
